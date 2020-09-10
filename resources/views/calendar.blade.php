@@ -65,7 +65,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="post" action="{{ url('register') }}">
+                    <form id="form-event" method="post" action="{{ url('register') }}">
                         @csrf
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Nome</label>
@@ -119,6 +119,7 @@
 
                         <div class="form-group row">
                             <div class="col-sm-12 text-right">
+                                <input id="datetime" type="hidden" name="datetime">
                                 <input type="submit" value="Cadastrar" class="btn btn-success">
                             </div>
                         </div>
@@ -152,6 +153,16 @@
     }*/
 </style>
 <script>
+    const baseUrl = '<?= url('') ?>';
+
+    $('#form-event').submit(function() {
+        var date = $('#cadastrar #start').val();
+        var time = $('#time').val();
+        time = time + ':00';
+        var datetime = date + ' ' + time;
+        $('#datetime').val(datetime);
+    });
+    /* Função que exibe mensagens de erros e sucesso quanto em contato com uma função PHP */
     <?php if (count($errors) > 0) : ?>
         var temp = '';
         $('#msg').modal('show');
@@ -218,9 +229,25 @@
                 if (info.startStr < dataAtual) {
                     toastr["warning"]("Você não pode marcar a consulta nesse dia!");
                 } else {
-                    $("#cadastrar #start").val(info.startStr.toLocaleString());
-                    $("#cadastrar #end").val(info.endStr.toLocaleString());
-                    $("#cadastrar").modal("show");
+
+                    var time = info.startStr;
+                    alert(time);
+
+                    $.ajax({
+                        data: '',
+                        type: 'GET',
+                        url: baseUrl + '/calendar/getEventsInDate/' + time,
+                        async: true,
+                        sucess: function(json) {
+                            $("#cadastrar #start").val(info.startStr.toLocaleString());
+                            $("#cadastrar").modal("show");
+
+                        },
+                        error: function() {
+                            toastr['error']('Algo deu errado, tente novamente mais tarde ou contate-nos');
+                        },
+                        dataType: 'json'
+                    });
                 }
             },
         });
