@@ -76,4 +76,58 @@ class Calendar extends Controller
         $query = json_encode($query);
         return view('calendar', ['events' => $query]);
     }
+
+    public function getEventsInDate($date)
+    {
+        $query = DB::table('event')->select(DB::raw('TIME(start) as date'))->whereDate('start', $date)->get();
+
+        //echo json_encode($query);
+        $startHour = strtotime('08:00:00');
+        $endHour = strtotime('17:00:00');
+        $options = '';
+
+        if ($query) {
+            if (count($query) > 0) {
+                while ($startHour <= $endHour) {
+
+                    $x = 0;
+
+                    foreach ($query as $time) {
+                        if ($startHour == strtotime($time->date)) {
+                            $x = 1;
+                            break;
+                        }
+                    }
+
+                    if ($x === 0) {
+                        $options .= '<option value="' . date('H:i:s', $startHour) . '">' . date('H:i', $startHour) . '</option>';
+                    }
+
+                    $startHour = strtotime('+1 hours', $startHour);
+                }
+            } else {
+                while ($startHour <= $endHour) {
+                    $options .= '<option value="' . date('H:i:s', $startHour) . '">' . date('H:i', $startHour) . '</option>';
+                    $startHour = strtotime('+1 hours', $startHour);
+                }
+            }
+
+            if ($options === '') {
+                return response()->json([
+                    'success' => false,
+                    'json'    => 'Esse dia não possui mais horários disponíveis!'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => true,
+                    'json'   => $options
+                ]);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'json'    => 'Algo deu errado, tente novamente mais tarde ou contate-nos!'
+            ]);
+        }
+    }
 }

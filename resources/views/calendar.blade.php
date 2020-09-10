@@ -102,17 +102,6 @@
                             <label class="col-sm-2 col-form-label">Horários Disponíveis</label>
                             <div class="col-sm-10">
                                 <select name="time" class="form-control" id="time" required>
-                                    <option value="" selected disabled>Selecione</option>
-                                    <option value="08:00">08:00</option>
-                                    <option value="09:00">09:00</option>
-                                    <option value="10:00">10:00</option>
-                                    <option value="11:00">11:00</option>
-                                    <option value="12:00">12:00</option>
-                                    <option value="13:00">13:00</option>
-                                    <option value="14:00">14:00</option>
-                                    <option value="15:00">15:00</option>
-                                    <option value="16:00">16:00</option>
-                                    <option value="17:00">17:00</option>
                                 </select>
                             </div>
                         </div>
@@ -158,7 +147,6 @@
     $('#form-event').submit(function() {
         var date = $('#cadastrar #start').val();
         var time = $('#time').val();
-        time = time + ':00';
         var datetime = date + ' ' + time;
         $('#datetime').val(datetime);
     });
@@ -229,19 +217,25 @@
                 if (info.startStr < dataAtual) {
                     toastr["warning"]("Você não pode marcar a consulta nesse dia!");
                 } else {
-
                     var time = info.startStr;
-                    alert(time);
 
                     $.ajax({
                         data: '',
                         type: 'GET',
                         url: baseUrl + '/calendar/getEventsInDate/' + time,
                         async: true,
-                        sucess: function(json) {
-                            $("#cadastrar #start").val(info.startStr.toLocaleString());
-                            $("#cadastrar").modal("show");
-
+                        success: function({
+                            success,
+                            json
+                        }) {
+                            if (success === true) {
+                                $('#cadastrar #time').empty();
+                                $("#cadastrar #time").append(json);
+                                $("#cadastrar #start").val(info.startStr.toLocaleString());
+                                $("#cadastrar").modal("show");
+                            } else {
+                                toastr['warning'](json);
+                            }
                         },
                         error: function() {
                             toastr['error']('Algo deu errado, tente novamente mais tarde ou contate-nos');
