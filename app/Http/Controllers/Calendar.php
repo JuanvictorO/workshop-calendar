@@ -70,11 +70,20 @@ class Calendar extends Controller
      *
      * @return void
      */
-    public function select()
+    public function list()
     {
-        $query = DB::table('event')->select('id', 'name AS title', 'start', 'end')->get();
-        $query = json_encode($query);
-        return view('calendar', ['events' => $query]);
+        return view('calendarAdmin');
+    }
+
+    public function selectEvents()
+    {
+        $start = (!empty($_GET["start"])) ? ($_GET["start"]) : ('');
+        $end = (!empty($_GET["end"])) ? ($_GET["end"]) : ('');
+
+        $query = DB::table('event')->select('id', 'name AS title', 'start', 'end')
+            ->whereDate('start', '>=', $start)->whereDate('end',   '<=', $end)->get();
+
+        return json_encode($query);
     }
 
     public function getEventsInDate($date)

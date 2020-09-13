@@ -169,6 +169,10 @@
     <?php endif; ?>
 </script>
 <script>
+    var events = '';
+    <?php if (isset($events)) : ?>
+        events = <?= $events ?>;
+    <?php endif; ?>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
@@ -179,6 +183,33 @@
         const dataAtual = dataBase[0];
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
+            /* eventSources: [baseUrl + '/calendar/selectEvents',
+                 {
+                     start: '2020-09-24',
+                     end: '2020-09-28',
+                     overlap: false,
+                     display: 'background',
+                     color: '#ff9f89'
+                 }
+             ],*/
+            events: [
+                baseUrl + '/calendar/selectEvents',
+
+                {
+                    start: '2020-09-24',
+                    end: '2020-09-28',
+                    overlap: false,
+                    display: 'background',
+                    color: '#ff9f89'
+                }
+            ],
+
+            eventTimeFormat: {
+                hour: 'numeric',
+                minute: '2-digit',
+                meridiem: false
+            },
+            eventColor: '#378006',
             locale: "pt-br",
             editable: true,
             dayMaxEventRows: true,
