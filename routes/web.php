@@ -17,7 +17,10 @@ Route::get('/', function () {
     return view('calendar');
 });
 Route::post('/register', 'Calendar@store');
+
 Route::get('/list', 'Calendar@list');
 Route::get('/calendar/selectEvents', 'Calendar@selectEvents');
 Route::get('/calendar/getEventsInDate/{date}', 'Calendar@getEventsInDate')
     ->middleware('ajax');
+
+Route::get('/nonOperatingDays', 'Calendar@nonOperatingDays');

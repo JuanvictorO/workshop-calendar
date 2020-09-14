@@ -139,4 +139,9 @@ class Calendar extends Controller
             ]);
         }
     }
+
+    public function nonOperatingDays()
+    {
+        return view('nonOperatingDays');
+    }
 }
