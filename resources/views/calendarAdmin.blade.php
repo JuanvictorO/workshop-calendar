@@ -169,10 +169,6 @@
     <?php endif; ?>
 </script>
 <script>
-    var events = '';
-    <?php if (isset($events)) : ?>
-        events = <?= $events ?>;
-    <?php endif; ?>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
@@ -183,27 +179,16 @@
         const dataAtual = dataBase[0];
 
         var calendar = new FullCalendar.Calendar(calendarEl, {
-            /* eventSources: [baseUrl + '/calendar/selectEvents',
-                 {
-                     start: '2020-09-24',
-                     end: '2020-09-28',
-                     overlap: false,
-                     display: 'background',
-                     color: '#ff9f89'
-                 }
-             ],*/
-            events: [
+            eventSources: [
                 baseUrl + '/calendar/selectEvents',
-
-                {
-                    start: '2020-09-24',
-                    end: '2020-09-28',
-                    overlap: false,
-                    display: 'background',
-                    color: '#ff9f89'
-                }
             ],
-
+            events: [{
+                start: '2020-09-24',
+                end: '2020-09-28',
+                overlap: false,
+                display: 'background',
+                color: '#ff9f89'
+            }],
             eventTimeFormat: {
                 hour: 'numeric',
                 minute: '2-digit',
@@ -213,23 +198,16 @@
             locale: "pt-br",
             editable: true,
             dayMaxEventRows: true,
-
             hiddenDays: [0],
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
-                right: 'dayGridMonth'
+                right: 'dayGridMonth,listMonth'
             },
             navLinks: false, // can click day/week names to navigate views
             selectable: true,
+            editable: false,
 
-            /*selectAllow: function(selectInfo) {
-                if (dataAtual < selectInfo.startStr) {
-                    return false;
-                } else {
-                    return true;
-                }
-            },*/
 
             eventClick: function(info) {
                 info.jsEvent.preventDefault(); // don't let the browser navigate
@@ -239,40 +217,6 @@
                 $("#visualizar #start").text(info.event.start.toLocaleString());
                 $("#visualizar #end").text(info.event.end.toLocaleString());
                 $("#visualizar").modal("show");
-            },
-            selectable: false,
-            dateClick: function(info) {
-                if (info.dateStr < dataAtual) {
-                    toastr["warning"]("Você não pode marcar a consulta nesse dia!");
-                } else {
-                    var time = info.dateStr;
-
-                    $.ajax({
-                        data: '',
-                        type: 'GET',
-                        url: baseUrl + '/calendar/getEventsInDate/' + time,
-                        async: true,
-                        success: function({
-                            success,
-                            json
-                        }) {
-                            if (success === true) {
-                                $('#cadastrar #time').empty();
-                                $("#cadastrar #time").append(json);
-                                $("#cadastrar #start").val(info.dateStr.toLocaleString());
-                                $("#cadastrar").modal("show");
-                            } else {
-                                $(info.dayEl).addClass('disabled');
-                                $(info.dayEl).css('background-color', 'rgb(255, 159, 137)');
-                                toastr['warning'](json);
-                            }
-                        },
-                        error: function() {
-                            toastr['error']('Algo deu errado, tente novamente mais tarde ou contate-nos');
-                        },
-                        dataType: 'json'
-                    });
-                }
             },
         });
 
