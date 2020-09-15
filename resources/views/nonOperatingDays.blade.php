@@ -13,14 +13,18 @@
     <link href='/calendar/main.css' rel='stylesheet' />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/personalizado.css">
+
     <link rel="stylesheet" href="/vendor/toastr/toastr.min.css">
+    <link rel="stylesheet" href="/vendor/jquery-confirm/css/jquery-confirm.css">
 
     <script src='/calendar/main.js'></script>
     <script src='/calendar/locales/pt-br.js'></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
     <script src="/vendor/toastr/toastr.min.js"></script>
+    <script src="/vendor/jquery-confirm/js/jquery-confirm.js"></script>
     <!--script src="/js/personalizado.js"></script-->
 </head>
 
@@ -129,41 +133,18 @@
         </div>
     </div>
 </div>
-
-<style>
-    .fc-day-past {
-        background-color: rgba(255, 159, 137, 0.16);
+<script>
+    toastr.options = {
+        "closeButton": true,
+        "preventDuplicates": true,
+        "progressBar": true,
     }
-</style>
+</script>
+
 <script>
     const baseUrl = '<?= url('') ?>';
-
-    $('#form-event').submit(function() {
-        var date = $('#cadastrar #start').val();
-        var time = $('#time').val();
-        var datetime = date + ' ' + time;
-        $('#datetime').val(datetime);
-    });
-    /* Função que exibe mensagens de erros e sucesso quanto em contato com uma função PHP */
-    <?php if (count($errors) > 0) : ?>
-        var temp = '';
-        $('#msg').modal('show');
-        $('#span-msg').addClass('text-danger');
-        <?php foreach ($errors->all() as $error) : ?>
-            temp += '<p class="mb-0">{{$error}}</p>';
-        <?php endforeach; ?>
-        $('#span-msg').html(temp);
-    <?php elseif (session('success')) : ?>
-        $('#msg').modal('show');
-        $('#span-msg').addClass('text-success');
-        $('#span-msg').html('{{ session("success") }}');
-    <?php endif; ?>
 </script>
 <script>
-    var events = '';
-    <?php if (isset($events)) : ?>
-        events = <?= $events ?>;
-    <?php endif; ?>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
@@ -187,30 +168,27 @@
             selectable: true,
             editable: false,
 
-            select: function(info) {
-                if (info.dateStr < dataAtual) {
-                    toastr["warning"]("Você não pode marcar a consulta nesse dia!");
-                } else {
-                    var time = info.dateStr;
+            events: baseUrl + '/calendar/getNonOperatingDays',
 
+            dateClick: function(info) {
+                console.log(info);
+                if (info.dateStr < dataAtual) {
+                    toastr["warning"]("Essa data já é passada, escolha uma data futura para não funcionamento.");
+                } else {
                     $.ajax({
                         data: '',
                         type: 'GET',
-                        url: baseUrl + '/calendar/getEventsInDate/' + time,
+                        url: baseUrl + '/calendar/verifyDay',
                         async: true,
-                        success: function({
-                            success,
-                            json
-                        }) {
-                            if (success === true) {
-                                $('#cadastrar #time').empty();
-                                $("#cadastrar #time").append(json);
-                                $("#cadastrar #start").val(info.dateStr.toLocaleString());
-                                $("#cadastrar").modal("show");
+                        success: function(response) {
+                            if (response.success === true) {
+                                if (response.verify === false) {
+                                    confirmDay(info.dateStr);
+                                } else {
+                                    alert('tem evento aqui');
+                                }
                             } else {
-                                $(info.dayEl).addClass('disabled');
-                                $(info.dayEl).css('background-color', 'rgb(255, 159, 137)');
-                                toastr['warning'](json);
+                                toastr['error']('Algo deu errado, tente novamente mais tarde ou contate-nos');
                             }
                         },
                         error: function() {
@@ -220,10 +198,47 @@
                     });
                 }
             },
+            eventClick: function(info) {
+                alert('okay');
+            }
         });
 
         calendar.render();
     });
+
+    function confirmDay(date) {
+        date = date.toLocaleString();
+        $.confirm({
+            title: 'Adicionar dia de não funcionamento',
+            content: 'Tem certeza que deseja escolher o dia ' + date + ' como não funcionamento?',
+            buttons: {
+                confirmar: function() {
+                    $.ajax({
+                        data: {
+                            start: date,
+                            _token: '{{csrf_token()}}'
+                        },
+                        type: 'POST',
+                        url: baseUrl + '/calendar/addNonOperatingDay',
+                        async: true,
+                        success: function(response) {
+                            if (response.success === true) {
+                                toastr['success'](response.msg);
+                                location.reload();
+                            } else {
+                                toastr['warning'](response.msg);
+                            }
+                        },
+                        error: function() {
+                            toastr['error']('Algo deu errado, tente novamente mais tarde ou contate-nos');
+                        },
+                        dataType: 'json'
+                    });
+                },
+                cancelar: function() {},
+            }
+        });
+    }
 </script>
 
 </html>

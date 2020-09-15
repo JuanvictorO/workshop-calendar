@@ -145,6 +145,13 @@
     }
 </style>
 <script>
+    toastr.options = {
+        "closeButton": true,
+        "preventDuplicates": true,
+        "progressBar": true,
+    }
+</script>
+<script>
     const baseUrl = '<?= url('') ?>';
 
     $('#form-event').submit(function() {

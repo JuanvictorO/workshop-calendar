@@ -169,6 +169,13 @@
     <?php endif; ?>
 </script>
 <script>
+    toastr.options = {
+        "closeButton": true,
+        "preventDuplicates": true,
+        "progressBar": true,
+    }
+</script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
@@ -183,8 +190,8 @@
                 baseUrl + '/calendar/selectEvents',
             ],
             events: [{
-                start: '2020-09-24',
-                end: '2020-09-28',
+                start: '2020-09-28',
+                end: '2020-09-30',
                 overlap: false,
                 display: 'background',
                 color: '#ff9f89'

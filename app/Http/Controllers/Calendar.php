@@ -144,4 +144,60 @@ class Calendar extends Controller
     {
         return view('nonOperatingDays');
     }
+
+    public function addNonOperatingDay(Request $request)
+    {
+        $input = $request->input();
+
+        if (!isset($input['start'])) {
+            return response()->json([
+                'success' => false,
+                'msg'    => 'Algo deu errado, tente novamente mais tarde ou contate-nos!'
+            ]);
+        }
+
+        unset($input['_token']);
+        $function = DB::table('nonOperatingDays')->insert($input);
+
+        if ($function) {
+            return response()->json([
+                'success' => true,
+                'msg'    => 'Dia marcado com sucesso!'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'msg'    => 'Algo deu errado, tente novamente mais tarde ou contate-nos!'
+            ]);
+        }
+    }
+
+    public function getNonOperatingDays()
+    {
+        $start = (!empty($_GET["start"])) ? ($_GET["start"]) : ('');
+        $end = (!empty($_GET["end"])) ? ($_GET["end"]) : ('');
+
+        $query = DB::table('nonOperatingDays')->select('id', 'start')
+            ->whereDate('start', '>=', $start)->whereDate('start',   '<=', $end)->get();
+
+        $x = 0;
+        foreach ($query as $event) {
+            $query[$x]->end = date('Y-m-d', strtotime($event->start) + 3600 * 24);
+            $query[$x]->overlap = false;
+            $query[$x]->display = 'background';
+            $query[$x]->color = 'red';
+            $x++;
+        }
+
+        return json_encode($query);
+    }
+
+    public function verifyDays($date)
+    {
+        if (!isset($date)) {
+            return response()->json([
+                'success' => false
+            ]);
+        }
+    }
 }
