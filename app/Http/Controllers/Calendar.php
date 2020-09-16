@@ -47,12 +47,14 @@ class Calendar extends Controller
 
         $input = $request->input();
 
+        // criando variável para armazenar o término da 'consulta'
         $end_time = strtotime("+1 hours", strtotime($input['time']));
         $end_time = date('H:i:s', $end_time);
 
         $input['end'] = $input['start'] . ' ' . $end_time;
         $input['start'] = $input['datetime'];
 
+        //liberando as variáveis para usar a query básica
         unset($input['time']);
         unset($input['_token']);
         unset($input['datetime']);
@@ -75,6 +77,11 @@ class Calendar extends Controller
         return view('calendarAdmin');
     }
 
+    /**
+     * Retona um JSON com consultas marcadas em determinado intervalo. Função utilizada pelo fullcalendar para exibir os eventos de um determinado intervalo.
+     *
+     * @return json
+     */
     public function selectEvents()
     {
         $start = (!empty($_GET["start"])) ? ($_GET["start"]) : ('');
@@ -86,6 +93,12 @@ class Calendar extends Controller
         return response()->json($query);
     }
 
+    /**
+     * Retorna os horários disponíveis de um determinado dia.
+     *
+     * @param date $date
+     * @return json
+     */
     public function getEventsInDate($date)
     {
         $query = DB::table('event')->select(DB::raw('TIME(start) as date'))->whereDate('start', $date)->get();
@@ -140,7 +153,7 @@ class Calendar extends Controller
         }
     }
 
-
+    // LEMBRAR DE SEPARAR AS FUNÇÕES DAQUI PARA BAIXO EM UM OUTRO CONTROLLER
     public function nonOperatingDays()
     {
         return view('nonOperatingDays');
