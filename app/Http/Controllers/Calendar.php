@@ -83,7 +83,7 @@ class Calendar extends Controller
         $query = DB::table('event')->select('id', 'name AS title', 'start', 'end')
             ->whereDate('start', '>=', $start)->whereDate('end',   '<=', $end)->get();
 
-        return json_encode($query);
+        return response()->json($query);
     }
 
     public function getEventsInDate($date)
@@ -140,6 +140,7 @@ class Calendar extends Controller
         }
     }
 
+
     public function nonOperatingDays()
     {
         return view('nonOperatingDays');
@@ -189,14 +190,28 @@ class Calendar extends Controller
             $x++;
         }
 
-        return json_encode($query);
+        return response()->json($query);
     }
 
-    public function verifyDays($date)
+    public function deleteNonOperatingDay($id)
     {
-        if (!isset($date)) {
+        if (!isset($id) || !is_numeric($id)) {
             return response()->json([
                 'success' => false
+            ]);
+        }
+
+        $function = DB::table('nonOperatingDays')->where('id', $id)->delete();
+
+        if ($function) {
+            return response()->json([
+                'success' => true,
+                'msg'    => 'Dia removido com sucesso!'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'msg'    => 'Algo deu errado, tente novamente mais tarde ou contate-nos!'
             ]);
         }
     }

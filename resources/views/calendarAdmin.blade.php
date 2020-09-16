@@ -189,13 +189,7 @@
             eventSources: [
                 baseUrl + '/calendar/selectEvents',
             ],
-            events: [{
-                start: '2020-09-28',
-                end: '2020-09-30',
-                overlap: false,
-                display: 'background',
-                color: '#ff9f89'
-            }],
+            events: baseUrl + '/calendar/getNonOperatingDays',
             eventTimeFormat: {
                 hour: 'numeric',
                 minute: '2-digit',

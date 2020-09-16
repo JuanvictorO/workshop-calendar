@@ -73,24 +73,6 @@
                                 <input type="text" name="name" class="form-control" id="Nome" placeholder="Nome" required>
                             </div>
                         </div>
-                        <!--div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Color</label>
-                            <div class="col-sm-10">
-                                <select name="color" class="form-control" id="color">
-                                    <option value="">Selecione</option>
-                                    <option style="color:#FFD700;" value="#FFD700">Amarelo</option>
-                                    <option style="color:#0071c5;" value="#0071c5">Azul Turquesa</option>
-                                    <option style="color:#FF4500;" value="#FF4500">Laranja</option>
-                                    <option style="color:#8B4513;" value="#8B4513">Marrom</option>
-                                    <option style="color:#1C1C1C;" value="#1C1C1C">Preto</option>
-                                    <option style="color:#436EEE;" value="#436EEE">Royal Blue</option>
-                                    <option style="color:#A020F0;" value="#A020F0">Roxo</option>
-                                    <option style="color:#40E0D0;" value="#40E0D0">Turquesa</option>
-                                    <option style="color:#228B22;" value="#228B22">Verde</option>
-                                    <option style="color:#8B0000;" value="#8B0000">Vermelho</option>
-                                </select>
-                            </div>
-                        </div-->
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Data</label>
                             <div class="col-sm-10">
@@ -197,8 +179,8 @@
                 right: 'dayGridMonth'
             },
             navLinks: false, // can click day/week names to navigate views
-            selectable: true,
-
+            selectable: false,
+            events: baseUrl + '/calendar/getNonOperatingDays',
             /*selectAllow: function(selectInfo) {
                 if (dataAtual < selectInfo.startStr) {
                     return false;
@@ -206,26 +188,22 @@
                     return true;
                 }
             },*/
-
-            eventClick: function(info) {
-                info.jsEvent.preventDefault(); // don't let the browser navigate
-
-                $("#visualizar #id").text(info.event.id);
-                $("#visualizar #title").text(info.event.title);
-                $("#visualizar #start").text(info.event.start.toLocaleString());
-                $("#visualizar #end").text(info.event.end.toLocaleString());
-                $("#visualizar").modal("show");
-            },
-            selectable: false,
             dateClick: function(info) {
+
+                var events = calendar.getEvents();
+                var result = verifyEventInDay(events, info.dateStr);
+
                 if (info.dateStr < dataAtual) {
                     toastr["warning"]("Você não pode marcar a consulta nesse dia!");
+                } else if (result) {
+                    toastr["warning"]("Nosso estabelecimento não funcionará esse dia!");
                 } else {
                     var time = info.dateStr;
 
                     $.ajax({
                         data: '',
                         type: 'GET',
+                        dataType: 'JSON',
                         url: baseUrl + '/calendar/getEventsInDate/' + time,
                         async: true,
                         success: function({
@@ -245,8 +223,7 @@
                         },
                         error: function() {
                             toastr['error']('Algo deu errado, tente novamente mais tarde ou contate-nos');
-                        },
-                        dataType: 'json'
+                        }
                     });
                 }
             },
@@ -254,6 +231,26 @@
 
         calendar.render();
     });
+
+    function verifyEventInDay(events, date) {
+        if (events.length == 0) {
+            return false;
+        }
+
+        var x = 0;
+        $.each(events, function(i, val) {
+            if (val.startStr == date) {
+                x = 1;
+                return false;
+            }
+        });
+
+        if (x == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 </script>
 
 </html>
