@@ -24,5 +24,8 @@ Route::get('/calendar/getEventsInDate/{date}', 'Calendar@getEventsInDate')
     ->middleware('ajax');
 
 Route::get('/nonOperatingDays', 'Calendar@nonOperatingDays');
-Route::post('/calendar/addNonOperatingDay', 'Calendar@addNonOperatingDay');
 Route::get('/calendar/getNonOperatingDays', 'Calendar@getNonOperatingDays');
+Route::delete('/calendar/deleteNonOperatingDay/{id}', 'Calendar@deleteNonOperatingDay')
+    ->middleware('ajax');
+Route::post('/calendar/addNonOperatingDay', 'Calendar@addNonOperatingDay')
+    ->middleware('ajax');
