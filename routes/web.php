@@ -18,7 +18,7 @@ Route::get('/cadastrar', function () {
 });
 Route::post('/register', 'Calendar@store');
 
-Route::get('/list', 'Calendar@list');
+Route::get('/listar', 'Calendar@list');
 Route::get('/calendar/selectEvents', 'Calendar@selectEvents');
 Route::get('/calendar/getEventsInDate/{date}', 'Calendar@getEventsInDate')
     ->middleware('ajax');
