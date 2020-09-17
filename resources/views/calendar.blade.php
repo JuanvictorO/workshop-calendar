@@ -8,20 +8,27 @@
 <html>
 
 <head>
-    <meta charset='utf-8' />
+    <meta charset="utf-8">
     <meta name="csrf-token" content="{{csrf_token ()}}">
-    <link href='/calendar/main.css' rel='stylesheet' />
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/personalizado.css">
-    <link rel="stylesheet" href="/vendor/toastr/toastr.min.css">
 
-    <script src='/calendar/main.js'></script>
-    <script src='/calendar/locales/pt-br.js'></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <script src="/vendor/toastr/toastr.min.js"></script>
-    <!--script src="/js/personalizado.js"></script-->
+    <link href="{{ asset('/vendor/calendar/main.css') }}" rel='stylesheet'>
+
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap-4.4.1/bootstrap.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('/css/personalizado.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('/vendor/toastr/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/vendor/jquery-confirm/css/jquery-confirm.css') }}">
+
+    <script src="{{ asset('/vendor/calendar/main.js') }}"></script>
+    <script src="{{ asset('/vendor/calendar/locales/pt-br.js') }}"></script>
+
+    <script src="{{ asset('/vendor/jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ asset('/vendor/bootstrap-4.4.1/popper.min.js') }}"></script>
+    <script src="{{ asset('/vendor/bootstrap-4.4.1/bootstrap.min.js') }}"></script>
+
+    <script src="{{ asset('/vendor/toastr/toastr.min.js') }}"></script>
+    <script src="{{ asset('/vendor/jquery-confirm/js/jquery-confirm.js') }}"></script>
 </head>
 
 <body>
