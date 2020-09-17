@@ -66,7 +66,7 @@ function confirmDay(date) {
                 $.ajax({
                     data: {
                         start: date,
-                        _token: '{{csrf_token()}}'
+                        _token: token
                     },
                     type: 'POST',
                     url: baseUrl + '/calendar/addNonOperatingDay',
