@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('calendar');
+Route::get('/cadastrar', function () {
+    return view('cadastrar');
 });
 Route::post('/register', 'Calendar@store');
 

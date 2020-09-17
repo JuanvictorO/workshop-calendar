@@ -74,7 +74,7 @@
 
     <?php endif; ?>
 
-    //  FULL CALENDAR
+    // FULL CALENDAR
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('calendar');
 
