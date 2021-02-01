@@ -7,4 +7,10 @@ create table event (
     end datetime not null unique
     /* Aqui vai entrar o ID_User no lugar de nome */
 )engine = InnoDB;
-select * from event;
+
+create table nonOperatingDays (
+	id int auto_increment primary key,
+    start datetime not null unique
+)engine = InnoDB;
+
+select * from nonOperatingDays;
